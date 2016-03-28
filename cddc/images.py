@@ -1,0 +1,28 @@
+from .image import Image
+from .dicts import SyncDict
+
+class Images(SyncDict):
+    AttributeName = 'image'
+    def __init__(self, client, default_timeout=None):
+        self.client = client
+        self.default_timeout = default_timeout
+        super(Images, self).__init__()
+
+    def instanciate(self, item):
+        return Image(self, self.client, item, self.default_timeout)
+
+    def inspect(self, *args, **kwds):
+        return self.client.inspect_image(*args, **kwds)
+
+    def list_items(self):
+        return self.client.images()
+
+    def pop(self, image):
+        image = super(Images, self).pop(image)
+        self.logger.info("image %s was removed", image)
+        return image
+
+    def update_timers(self):
+        for image in self.itervalues():
+            image.update_timer()
+
