@@ -19,6 +19,7 @@ import sys
 from setuptools import setup, find_packages
 
 requires = [
+    "pyyaml",
     "pytimeparse",
     "docker-py",
 ]

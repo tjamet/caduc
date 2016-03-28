@@ -3,13 +3,14 @@ from .dicts import SyncDict
 
 class Containers(SyncDict):
     AttributeName = 'container'
-    def __init__(self, client, images):
+    def __init__(self, config, client, images):
+        self.config = config
         self.client = client
         self.images = images
         super(Containers, self).__init__()
 
     def instanciate(self, item):
-        container = Container(self.client, item)
+        container = Container(self.config, self.client, item)
         self.images[container.image_id].add(container)
         return container
 

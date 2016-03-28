@@ -1,7 +1,8 @@
 import logging
 
 class Container(set):
-    def __init__(self, client, id):
+    def __init__(self, config, client, id):
+        self.config = config
         self.logger = logging.getLogger(str(self.__class__))
         self.client = client
         inspect = self.client.inspect_container(id)

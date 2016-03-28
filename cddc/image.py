@@ -1,3 +1,4 @@
+import fnmatch
 import logging
 
 from pytimeparse.timeparse import timeparse
@@ -8,12 +9,13 @@ DEFAULT_DELETE_TIMEOUT = "1d"
 class Image(set):
     DefaultTimeout = DEFAULT_DELETE_TIMEOUT
 
-    def __init__(self, images, client, Id, default_timeout=None):
+    def __init__(self, config, images, client, Id, default_timeout=None):
+        self.config = config
         self.logger = logging.getLogger(str(self.__class__))
         self.event = None
         self.client = client
         self.images = images
-        self.delete_timeout = self.DefaultTimeout if default_timeout is None else default_timeout
+        self.grace_time = self.DefaultTimeout if default_timeout is None else default_timeout
         self.id = self.client.inspect_image(Id)['Id']
         self.children = set()
         self.refresh(False)
@@ -26,12 +28,37 @@ class Image(set):
     def __hash__(self):
         return hash(self.id)
 
+    def get_grace_times(self, names):
+        labels = self.details['Config']['Labels']
+        if labels and labels.get("com.cddc.image.grace_time"):
+            return [labels.get('com.cddc.image.grace_time', None)]
+        grace_config = self.config.get("images")
+        grace_times = []
+        for name in names:
+            for pattern, kv in grace_config.iteritems():
+                if fnmatch.fnmatch(name, pattern):
+                    grace_time = kv['grace_time']
+                    if grace_time is None or grace_time==-1:
+                        grace_times.append(float('inf'))
+                    else:
+                        grace_times.append(kv['grace_time'])
+        if grace_times:
+            return grace_times
+        if self.grace_time:
+            return [ self.grace_time ]
+        return [ self.DefaultTimeout ]
+
+    def parse_grace_time(self, timeout):
+        if isinstance(timeout, (str, unicode)):
+            seconds = timeparse(timeout)
+            if seconds is None:
+                seconds = int(timeout)
+        else:
+            seconds = timeout
+        return seconds
+
     def refresh(self, update_timer=True):
         self.details = self.client.inspect_image(self.id)
-        labels = self.details['Config']['Labels']
-        delete_timeout = labels.get('com.cddc.image.grace_time', None) if labels else None
-        if delete_timeout is not None:
-            self.delete_timeout = delete_timeout
         if update_timer:
             self.update_timer()
 
@@ -55,21 +82,19 @@ class Image(set):
         self.update_timer()
  
     def schedule_rm(self):
-        if self.delete_timeout is not None:
-            delete_timeout = self.delete_timeout
-        else:
-            delete_timeout = self.DefaultTimeout
-        if isinstance(delete_timeout, (str, unicode)):
-            seconds = timeparse(delete_timeout)
-            if seconds is None:
-                seconds = int(delete_timeout)
-        else:
-            seconds = delete_timeout
-        if seconds<0:
-            self.logger.info("not scheduling %s removal, delete delay %r is negative", self, seconds)
+        grace_texts = self.get_grace_times(self.details['RepoTags'])
+        seconds = -1
+        grace_text = None
+        for txt in grace_texts:
+            t = self.parse_grace_time(txt)
+            if t > seconds:
+                seconds = t
+                grace_text = txt
+        if seconds<0 or seconds==float('inf'):
+            self.logger.info("not scheduling %s removal, delete delay %r is negative or infinite", self, seconds)
             return
         if not self.event:
-            self.logger.info("scheduling %s removal in %s (%r s)", self, delete_timeout, seconds)
+            self.logger.info("scheduling %s removal in %s (%r s)", self, grace_text, seconds)
             self.event = Timer(seconds, self.rm)
             self.event.start()
 
