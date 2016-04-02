@@ -20,8 +20,8 @@ class Images(SyncDict):
 
     def pop(self, image):
         image = super(Images, self).pop(image)
-        self.logger.info("image %s was removed", image)
         if image is not None:
+            self.logger.info("image %s was removed", image)
             image.deleted()
         return image
 

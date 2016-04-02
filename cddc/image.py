@@ -95,7 +95,7 @@ class Image(set):
         self.update_timer()
 
     def delete_child(self, child):
-        self.logger.info("%s sub image was deleted %s", self, child)
+        self.logger.debug("%s sub image was deleted %s", self, child)
         self.children.remove(child)
         self.update_timer()
  
@@ -109,7 +109,7 @@ class Image(set):
                 seconds = t
                 grace_text = txt
         if seconds<0 or seconds==float('inf'):
-            self.logger.info("not scheduling %s removal, delete delay %r is negative or infinite", self, seconds)
+            self.logger.debug("not scheduling %s removal, delete delay %r is negative or infinite", self, seconds)
             return
         if not self.event:
             self.logger.info("scheduling %s removal in %s (%r s)", self, grace_text, seconds)
@@ -142,7 +142,7 @@ class Image(set):
             # we are about to request an image deletion
             # cancel the original timer and schedule another one in case the deletion fails
             self.cancel_rm()
-            self.logger.info("deleting old image %s", self)
+            self.logger.info("deleting image %s", self)
             for name in self.details.get('RepoTags', []) + [self.id]:
                 try:
                     self.client.remove_image(name)

@@ -21,13 +21,17 @@ class Watcher(object):
             self.images.pop(event['id'])
 
     def commit(self, event):
+        # most often, a commit is followed by a tag, adding the image to our cache.
+        # However, it could be interesting to handle the rare cases where images are
+        # not tagged after commitment
         self.logger.debug("would re-load image list for event %r", event)
 
     def delete(self, event):
         try:
             self.images.pop(event['id'])
         except KeyError:
-            self.logger.error("Failed to destroy image %s, it was expected to be already deleted", event['id'])
+            # we are not responsible of receiving an event twice, just to be resilient to it
+            self.logger.debug("Failed to destroy image %s, it was expected to be already deleted", event['id'])
 
     def create(self, event):
         self.containers.add(event['id'])
