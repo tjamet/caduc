@@ -16,7 +16,7 @@ class Images(SyncDict):
         return self.client.inspect_image(*args, **kwds)
 
     def list_items(self):
-        return self.client.images()
+        return self.client.images(all=True)
 
     def pop(self, image):
         image = super(Images, self).pop(image)
