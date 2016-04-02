@@ -20,3 +20,26 @@ To delete images one hour after removal of the last container running them, simp
 
 The default gracetime is of 1 day.
 
+Customize
+---------
+
+You can customize image grace time, the delay between last container/children layer using the image is deleted
+and the actual image removal. This customization can be done per image, matching their tagged name.
+To do so, create ``~/.cddc`` directory with a ``config.yml`` file inside it. The matching will be done
+by python's `fnmatch function <https://docs.python.org/2/library/fnmatch.html#fnmatch.fnmatch>`_.
+
+This config file should look like:
+
+    images:
+        <match>:
+            grace_time: <some_delay>
+
+To keep base images stored on your local registry (my.repo.local) 2 days and never delete images pulled
+from tjamet on dockerhub, create a config.yml file like this.
+
+    images:
+        my.repo.local/base/*:
+            grace_time: 2d
+        tjamet/*:
+            grace_time: -1
+
