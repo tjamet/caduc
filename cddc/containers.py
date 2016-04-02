@@ -18,7 +18,7 @@ class Containers(SyncDict):
         return self.client.inspect_container(*args, **kwds)
 
     def list_items(self):
-        return self.client.containers()
+        return self.client.containers(all=True)
 
     def pop(self, container):
         container = super(Containers, self).pop(container)
