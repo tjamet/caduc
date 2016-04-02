@@ -1,13 +1,26 @@
+import docker
 import fnmatch
 import logging
+import threading
 
 from pytimeparse.timeparse import timeparse
 from .timer import Timer
 
 DEFAULT_DELETE_TIMEOUT = "1d"
 
+class ClientSemaphore(object):
+    def __init__(self, timeout=5):
+        self.semaphore = threading.Semaphore(timeout)
+    def __enter__(self):
+        self.semaphore.acquire()
+        return self
+    def __exit__(self, *args,**kwds):
+        self.semaphore.release()
+
 class Image(set):
     DefaultTimeout = DEFAULT_DELETE_TIMEOUT
+    # allow max 5 concurrent deletes, preventing from requests.packages.urllib3.connectionpool:Connection pool is full, discarding connection errors
+    RmSemaphore = ClientSemaphore(5)
 
     def __init__(self, config, images, client, Id, default_timeout=None):
         self.config = config
@@ -120,8 +133,9 @@ class Image(set):
         self.update_timer()
 
     def rm(self):
-        self.logger.info("deleting old image %s", self)
-        self.client.remove_image(self.id)
-        # while we don't have the acknoledgement through
-        # the event callback, keep the image reference in memory
+        with self.RmSemaphore:
+            self.logger.info("deleting old image %s", self)
+            self.client.remove_image(self.id)
+            # while we don't have the acknoledgement through
+            # the event callback, keep the image reference in memory
 
