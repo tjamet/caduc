@@ -43,5 +43,8 @@ class Watcher(object):
 
     def watch(self):
         for event in self.client.events(decode=True):
-            getattr(self, event['Action'], self.__noop)(event)
+            try:
+                getattr(self, event['Action'], self.__noop)(event)
+            except Exception as e:
+                self.logger.error("Failed to handle event %r, error: %r" % (event, e))
 
