@@ -30,12 +30,14 @@ class Image(set):
         self.images = images
         self.grace_time = self.DefaultTimeout if default_timeout is None else default_timeout
         self.id = self.client.inspect_image(Id)['Id']
+
         self.children = set()
         self.refresh(False)
         parentId = self.details.get('Parent', None)
-        self.parent = self.images[parentId] if parentId else None
-        if self.parent:
-            self.parent.add_child(self)
+        # drop empty strings, consider them as None
+        self.parentId = parentId if parentId else None
+        if self.parentId:
+            self.images[parentId].add_child(self.id)
         super(Image, self).__init__()
     
     def __hash__(self):
@@ -80,8 +82,8 @@ class Image(set):
 
     def __rm__(self):
         self.cancel_rm()
-        if self.parent:
-            self.parent.delete_child(self)
+        if self.parentId:
+            self.images[self.parentId].delete_child(self.id)
         super(Image, self).__rm__()
 
     def add_child(self, child):
