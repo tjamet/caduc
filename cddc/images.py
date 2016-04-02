@@ -21,6 +21,8 @@ class Images(SyncDict):
     def pop(self, image):
         image = super(Images, self).pop(image)
         self.logger.info("image %s was removed", image)
+        if image is not None:
+            image.deleted()
         return image
 
     def update_timers(self):

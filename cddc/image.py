@@ -81,10 +81,13 @@ class Image(set):
         return 'Image<Id: %s, names: %r parent: %s, children: %r>' % (self.details['Id'], self.details.get('RepoTags', None), self.parentId, self.children)
 
     def __rm__(self):
+        self.deleted()
+        super(Image, self).__rm__()
+
+    def deleted(self):
         self.cancel_rm()
         if self.parentId:
             self.images[self.parentId].delete_child(self.id)
-        super(Image, self).__rm__()
 
     def add_child(self, child):
         self.logger.debug("%s inherits %s", child, self)
