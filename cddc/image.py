@@ -78,7 +78,7 @@ class Image(set):
             self.update_timer()
 
     def __str__(self):
-        return 'Image<Id: %s, names: %r>' % (self.details['Id'], self.details.get('RepoTags', None))
+        return 'Image<Id: %s, names: %r parent: %s, children: %r>' % (self.details['Id'], self.details.get('RepoTags', None), self.parentId, self.children)
 
     def __rm__(self):
         self.cancel_rm()
