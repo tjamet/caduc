@@ -63,10 +63,11 @@ class SyncDict(dict):
         """
         for id in self.__iterItemIds(item):
             try:
-                self.logger.debug("getting item %s keys %s", id, self.keys())
+                self.logger.debug("getting item %s", id)
                 return super(SyncDict, self).__getitem__(id)
             except KeyError:
                 continue
+        self.logger.debug("Failed to retrieve %s from cache, instanciate one", item)
         instance = self.instanciate(id)
         if instance is not None:
             super(SyncDict, self).__setitem__(id, instance)
