@@ -136,8 +136,27 @@ class Image(set):
 
     def rm(self):
         with self.RmSemaphore:
+            # we are about to request an image deletion
+            # cancel the original timer and schedule another one in case the deletion fails
+            self.cancel_rm()
             self.logger.info("deleting old image %s", self)
-            self.client.remove_image(self.id)
+            for name in self.details.get('RepoTags', []) + [self.id]:
+                try:
+                    self.client.remove_image(name)
+                except docker.errors.NotFound:  
+                    try:
+                        self.refresh()
+                        if not self.event:
+                            break
+                    except docker.errors.NotFound:
+                        self.images.pop(self.id)
+                        break
+                except Exception as e:
+                    self.logger.error("Failed removing %s exception raised: %s" % (self, e))
+                    break
+            else:
+                self.logger.debug("Failed to delete %s, give it another chance", self)
+                self.schedule_rm()
             # while we don't have the acknoledgement through
             # the event callback, keep the image reference in memory
 
