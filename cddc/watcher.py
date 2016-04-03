@@ -34,7 +34,8 @@ class Watcher(object):
             self.logger.debug("Failed to destroy image %s, it was expected to be already deleted", event['id'])
 
     def create(self, event):
-        self.containers.add(event['id'])
+        if event['Type']=='container':
+            self.containers.add(event['id'])
 
     def destroy(self, event):
         try:
