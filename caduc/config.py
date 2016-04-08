@@ -26,10 +26,12 @@ class Config(Node):
     def __init__(self, options, config_path=None):
         if config_path is None:
             config_path = os.path.join(os.path.expanduser("~"), ".caduc", "config.yml")
-        if os.path.exists(config_path):
-            config = yaml.load(file(config_path, 'r'))
+            if os.path.exists(config_path):
+                config = yaml.load(file(config_path, 'r'))
+            else:
+                config = {}
         else:
-            config = {}
+            config = yaml.load(file(config_path, 'r'))
         for opt in options:
             k, v = self.parse_kv(opt)
             node = config
