@@ -25,6 +25,8 @@ def main(argv=sys.argv[1:]):
                       help="Switch debug logging on")
     parser.add_option("-c", '--config', dest="config", action='append', default=[],
                       help="Default grace TIME between last container removal (or last child image removal) and proper image removal", metavar="TIME")
+    parser.add_option("-C", '--config-file', dest="config_path",
+                      help="Sets the location of caduc configuration FILE", metavar="FILE")
     (options, args) = parser.parse_args(argv)
 
     if options.debug:
@@ -33,7 +35,7 @@ def main(argv=sys.argv[1:]):
         logging.basicConfig(level=logging.INFO)
 
     client = docker.Client(**docker.utils.kwargs_from_env(assert_hostname=False))
-    config = Config(options.config)
+    config = Config(options.config, options.config_path)
     images = Images(config, client, default_timeout=options.image_gracetime)
     containers = Containers(config, client, images)
     images.update_timers()
