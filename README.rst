@@ -6,6 +6,15 @@ A gracetime is observed between the removal of a container and removal of the im
 How To
 ======
 
+Run in a container
+------------------
+
+As simple as running:
+``docker run --rm -ti -v /var/run/docker.sock:/var/run/docker.sock tjamet/caduc``
+
+Optionnally, you can provide a configuration file:
+``docker run --rm -ti -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/.cddc:/var/run/caduc:ro tjamet/caduc --config-file /var/run/caduc/config.yml``
+
 Install
 -------
 
