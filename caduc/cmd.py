@@ -24,7 +24,7 @@ def main(argv=sys.argv[1:]):
     parser.add_option("-D", '--debug', dest="debug", action='store_true',
                       help="Switch debug logging on")
     parser.add_option("-c", '--config', dest="config", action='append', default=[],
-                      help="Default grace TIME between last container removal (or last child image removal) and proper image removal", metavar="TIME")
+                      help="Adds KEY:VALUE to the configuration", metavar="KEY:VALUE")
     parser.add_option("-C", '--config-file', dest="config_path",
                       help="Sets the location of caduc configuration FILE", metavar="FILE")
     (options, args) = parser.parse_args(argv)
