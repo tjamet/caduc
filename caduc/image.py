@@ -45,8 +45,8 @@ class Image(set):
 
     def get_grace_times(self, names):
         labels = self.details['Config']['Labels']
-        if labels and labels.get("com.cddc.image.grace_time"):
-            return [labels.get('com.cddc.image.grace_time', None)]
+        if labels and labels.get("com.caduc.image.grace_time"):
+            return [labels.get('com.caduc.image.grace_time', None)]
         grace_config = self.config.get("images")
         grace_times = []
         for name in names:

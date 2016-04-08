@@ -16,7 +16,7 @@ Use
 ---
 
 Setup your environment so that ``docker ps`` returns the list of running containers
-To delete images one hour after removal of the last container running them, simply run ``cddc --image-gracetime="1h"``.
+To delete images one hour after removal of the last container running them, simply run ``caduc --image-gracetime="1h"``.
 
 The default gracetime is of 1 day.
 
@@ -25,7 +25,7 @@ Customize
 
 You can customize image grace time, the delay between last container/children layer using the image is deleted
 and the actual image removal. This customization can be done per image, matching their tagged name.
-To do so, create ``~/.cddc`` directory with a ``config.yml`` file inside it. The matching will be done
+To do so, create ``~/.caduc`` directory with a ``config.yml`` file inside it. The matching will be done
 by python's `fnmatch function <https://docs.python.org/2/library/fnmatch.html#fnmatch.fnmatch>`_.
 
 This config file should look like:

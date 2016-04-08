@@ -8,10 +8,10 @@ import sys
 if __name__=='__main__':
     sys.path.append(os.path.join(os.path.dirname(sys.argv[0]), '..'))
 
-from cddc.config import Config
-from cddc.containers import Containers
-from cddc.images import Images
-from cddc.watcher import Watcher
+from caduc.config import Config
+from caduc.containers import Containers
+from caduc.images import Images
+from caduc.watcher import Watcher
 
 DEFAULT_DELETE_TIMEOUT = "1d"
 

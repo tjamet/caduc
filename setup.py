@@ -108,11 +108,11 @@ def getVersion() :
         return version
 
 dist = setup(
-    name='cddc',
+    name='caduc',
     version=getVersion(),
     license='GNU GPLv3',
-    url='https://github.com/tjamet/cddc',
-    description='cddc monitors docker events and schedules clean-up when resources are nor used any longer',
+    url='https://github.com/tjamet/caduc',
+    description='caduc monitors docker events and schedules clean-up when resources are nor used any longer',
     long_description=README + '\n\n' + CHANGES,
     classifiers=CLASSIFIERS,
     author="Thibault Jamet",
@@ -129,7 +129,7 @@ dist = setup(
     zip_safe=False,
     entry_points={
         'console_scripts': [
-            'cddc = cddc.cmd:main',
+            'caduc = caduc.cmd:main',
         ],
     },
 )

@@ -25,7 +25,7 @@ class Config(Node):
 
     def __init__(self, options, config_path=None):
         if config_path is None:
-            config_path = os.path.join(os.path.expanduser("~"), ".cddc", "config.yml")
+            config_path = os.path.join(os.path.expanduser("~"), ".caduc", "config.yml")
         if os.path.exists(config_path):
             config = yaml.load(file(config_path, 'r'))
         else:
