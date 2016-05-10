@@ -48,8 +48,8 @@ class Image(set):
         if labels and labels.get("com.caduc.image.grace_time"):
             return [labels.get('com.caduc.image.grace_time', None)]
         grace_config = self.config.get("images")
+        grace_times = []
         if grace_config:
-            grace_times = []
             for name in names:
                 for pattern, kv in grace_config.iteritems():
                     if fnmatch.fnmatch(name, pattern):
