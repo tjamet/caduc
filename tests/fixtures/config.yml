@@ -1,0 +1,6 @@
+---
+images:
+    my.repo.local/base/*:
+        grace_time: 2d
+    tjamet/*:
+        grace_time: -1
