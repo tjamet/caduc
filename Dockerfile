@@ -1,7 +1,6 @@
-FROM python:2.7
+FROM python:2.7-alpine
 
-ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get install -y git python-setuptools && apt-get clean
+RUN apk update && apk add git
 
 ADD . /tmp/srcs
 RUN cd /tmp/srcs && python setup.py install
