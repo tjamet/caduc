@@ -44,7 +44,8 @@ This config file should look like:
             grace_time: <some_delay>
 
 To keep base images stored on your local registry (my.repo.local) 2 days and never delete images pulled
-from tjamet on dockerhub, create a config.yml file like this.
+from tjamet on dockerhub, create a config.yml file like this. The delay should be a string matching
+`pytimeparse <https://pypi.python.org/pypi/pytimeparse/1.1.0>`_.
 
     images:
         my.repo.local/base/*:
