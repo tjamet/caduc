@@ -9,8 +9,8 @@ from .timer import Timer
 DEFAULT_DELETE_TIMEOUT = "1d"
 
 class ClientSemaphore(object):
-    def __init__(self, timeout=5):
-        self.semaphore = threading.Semaphore(timeout)
+    def __init__(self, count=5):
+        self.semaphore = threading.Semaphore(count)
     def __enter__(self):
         self.semaphore.acquire()
         return self
