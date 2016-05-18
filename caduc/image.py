@@ -29,10 +29,10 @@ class Image(set):
         self.client = client
         self.images = images
         self.grace_time = self.DefaultTimeout if default_timeout is None else default_timeout
-        self.id = self.client.inspect_image(Id)['Id']
+        self.details = self.client.inspect_image(Id)
+        self.id = self.details['Id']
 
         self.children = set()
-        self.refresh(False)
         parentId = self.details.get('Parent', None)
         # drop empty strings, consider them as None
         self.parentId = parentId if parentId else None
@@ -73,10 +73,9 @@ class Image(set):
             seconds = timeout
         return seconds
 
-    def refresh(self, update_timer=True):
+    def refresh(self):
         self.details = self.client.inspect_image(self.id)
-        if update_timer:
-            self.update_timer()
+        self.update_timer()
 
     def __str__(self):
         return 'Image<Id: %s, names: %r parent: %s, children: %r>' % (self.details['Id'], self.details.get('RepoTags', None), self.parentId, self.children)
