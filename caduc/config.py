@@ -10,46 +10,58 @@ class Node(dict):
     def update(self, other):
         for k, v in other.iteritems():
             try:
-                node = self[k]
+                oldv = self[k]
             except KeyError:
-                node = Node()
-                self[k] = node
-            if isinstance(v, dict):
-                if not isinstance(node, dict):
-                    raise ValueError("Can't update uncoherent values for key %s, old value: %r, new value: %r" % (k, node, v))
-                node.update(v)
+                if isinstance(v, dict):
+                    node = Node()
+                    node.update(v)
+                    self[k] = node
+                else:
+                    self[k] = v
             else:
-                self[k] = v
+                if isinstance(oldv, dict):
+                    if not isinstance(v, dict):
+                        raise ValueError("Can't update uncoherent values for key %s, old value: %r, new value: %r" % (k, oldv, v))
+                    oldv.update(v)
+                else:
+                    if isinstance(v, dict):
+                        raise ValueError("Can't update uncoherent values for key %s, old value: %r, new value: %r" % (k, oldv, v))
+                    self[k] = v
 
 class Config(Node):
 
-    def __init__(self, options, config_path=None):
+    def __init__(self, options=[], config_path=None):
         if config_path is None:
             config_path = os.path.join(os.path.expanduser("~"), ".caduc", "config.yml")
             if os.path.exists(config_path):
-                config = yaml.load(file(config_path, 'r'))
+                config = yaml.load(open(config_path, 'r'))
             else:
                 config = {}
         else:
-            config = yaml.load(file(config_path, 'r'))
+            config = yaml.load(open(config_path, 'r'))
+        super(Config, self).__init__(**config)
         for opt in options:
             k, v = self.parse_kv(opt)
-            node = config
+            node = {}
+            child = node
             keys = self.parse_key(k)
             for key in keys[:-1]:
-                try:
-                    node = config[key]
-                except KeyError:
-                    node = {}
-                    config[key] = node
-            node[key[-1]] = v
-        super(Config, self).__init__(**config)
+                child[key] = {}
+                child = child[key]
+            child[keys[-1]] = v
+            self.update(node)
 
     def parse_key(self, key):
-        return key.split('.', 1)
+        r = key.split('.')
+        if r == ['']:
+            raise ValueError('Failed to find any key in %r' % key)
+        return r
 
     def parse_kv(self, kv):
-        return kv.split('=', 1)
+        r = kv.split('=', 1)
+        if len(r) != 2:
+            raise ValueError('Failed to decode <key>=<value> in %r.' % kv)
+        return r
 
     def get(self, path, default=None):
         node = self
