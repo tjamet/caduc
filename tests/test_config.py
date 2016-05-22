@@ -98,10 +98,20 @@ class TestNode(unittest.TestCase):
 
 class TestConfig(unittest.TestCase):
 
+    def setUp(self):
+        self.orig_osp = {}
+    def tearDown(self):
+        for key, val in self.orig_osp.iteritems():
+            setattr(os.path, key, val)
+
     def stub_config(self, homedir='HOME', ospjoin='.', exists=False):
-        os.path.expanduser = mock.MagicMock(return_value=homedir)
-        os.path.join = mock.MagicMock(return_value=ospjoin)
-        os.path.exists = mock.MagicMock(return_value=exists)
+        for key, mocked in (
+                ['expanduser', homedir],
+                ['join', ospjoin],
+                ['exists', exists],
+            ):
+            self.orig_osp[key] = getattr(os.path, key)
+            setattr(os.path, key, mock.MagicMock(return_value=mocked))
 
     @property
     def config_path(self):
@@ -214,4 +224,17 @@ class TestConfig(unittest.TestCase):
             cfg = caduc.config.Config(['1'])
         with self.assertRaises(ValueError):
             cfg = caduc.config.Config(['=1'])
+
+    def test_get_single_key(self):
+        cfg = caduc.config.Config(['some.key=2', 'somevalue=1'])
+        cfg.get.when.called_with('somevalue').should.return_value('1')
+        cfg.get.when.called_with('somevalue', None).should.return_value('1')
+        cfg.get.when.called_with('some.key').should.return_value('2')
+        cfg.get.when.called_with('some.key', None).should.return_value('2')
+
+    def test_get_key_returns_default_value_on_miss(self):
+        cfg = caduc.config.Config(['some.key=2', 'somevalue=1'])
+        cfg.get.when.called_with('some.other.key').should.return_value(None)
+        cfg.get.when.called_with('some.other.key', 'some.default').should.return_value('some.default')
+        
 
