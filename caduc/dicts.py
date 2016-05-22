@@ -92,22 +92,18 @@ class SyncDict(dict):
         return super(SyncDict, self).__setitem__(inspect['Id'], value)
 
     def __delitem__(self, item):
-        try:
-            inspect = self.__inspect(item)
-            id = inspect['Id']
-        except KeyError:
-            id = item
-        super(SyncDict, self).__delitem__(id)
+        for id in self.__iterItemIds(item):
+            try:
+                return super(SyncDict, self).__delitem__(id)
+            except KeyError:
+                continue
+        raise KeyError('%s: no such key' % item)
 
     def add(self, item):
         """
             Automatic value creation
             retrieves item Id and call instanciate(item)
         """
-        inspect = self.__inspect(item)
-        try:
-            self[item]
-        except KeyError:
-            self.logger.debug("Adding item %s", item)
-            return super(SyncDict, self).__setitem__(inspect['Id'], self.instanciate(inspect['Id']))
+        # getitem already performs instanciation when needed
+        return self[item]
 
