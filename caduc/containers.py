@@ -26,9 +26,10 @@ class Containers(SyncDict):
     def pop(self, container):
         container = super(Containers, self).pop(container)
         self.logger.info("container %s was removed", container)
-        try:
-            self.images[container.image_id].remove(container)
-        except KeyError:
-            self.logger.error("%s is running on not found image %s. It looks like it has been deleted --force" % (container, container.image_id))
+        if container is not None:
+            try:
+                self.images[container.image_id].remove(container)
+            except KeyError:
+                self.logger.error("%s is running on not found image %s. It looks like it has been deleted --force" % (container, container.image_id))
         return container
 
