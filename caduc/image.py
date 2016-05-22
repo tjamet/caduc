@@ -64,9 +64,7 @@ class Image(set):
                             grace_times.add(kv['grace_time'])
         if grace_times:
             return grace_times
-        if self.grace_time:
-            return [ self.grace_time ]
-        return [ self.DefaultTimeout ]
+        return set([self.grace_time])
 
     def parse_grace_time(self, timeout):
         if isinstance(timeout, (str, unicode)):
