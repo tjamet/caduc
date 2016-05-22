@@ -42,10 +42,7 @@ class SyncDict(dict):
 
     def __inspect(self, item):
         try:
-            if isinstance(item, (tuple, list)):
-                return self.inspect(*item)
-            else:
-                return self.inspect(item)
+            return self.inspect(item)
         except docker.errors.NotFound:
             raise KeyError("Failed to retrieve %s matching '%r'" % (self.AttributeName, item))
 
