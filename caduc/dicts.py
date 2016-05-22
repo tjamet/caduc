@@ -77,10 +77,10 @@ class SyncDict(dict):
         for id in self.__iterItemIds(item):
             try:
                 self.logger.debug("popping item %s keys %s", id, self.keys())
-                return super(SyncDict, self).__getitem__(id)
+                return super(SyncDict, self).pop(id)
             except KeyError:
                 continue
-        raise KeyError("%s: no such key", item)
+        raise KeyError("%s: no such key" % item)
 
     def __setitem__(self, item, value):
         """
