@@ -84,10 +84,6 @@ class Image(set):
     def __str__(self):
         return 'Image<Id: %s, names: %r parent: %s, children: %r>' % (self.details['Id'], self.details.get('RepoTags', None), self.parentId, self.children)
 
-    def __rm__(self):
-        self.deleted()
-        super(Image, self).__rm__()
-
     def deleted(self):
         self.cancel_rm()
         if self.parentId:
