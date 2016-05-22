@@ -110,7 +110,8 @@ class TestConfig(unittest.TestCase):
                 ['join', ospjoin],
                 ['exists', exists],
             ):
-            self.orig_osp[key] = getattr(os.path, key)
+            if key not in self.orig_osp:
+                self.orig_osp[key] = getattr(os.path, key)
             setattr(os.path, key, mock.MagicMock(return_value=mocked))
 
     @property
