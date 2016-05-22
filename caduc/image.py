@@ -50,18 +50,18 @@ class Image(set):
     def get_grace_times(self, names):
         labels = self.details['Config']['Labels']
         if labels and labels.get("com.caduc.image.grace_time"):
-            return [labels.get('com.caduc.image.grace_time', None)]
+            return set([labels.get('com.caduc.image.grace_time', None)])
         grace_config = self.config.get("images")
-        grace_times = []
+        grace_times = set()
         if grace_config:
             for name in names:
                 for pattern, kv in grace_config.iteritems():
                     if fnmatch.fnmatch(name, pattern):
                         grace_time = kv['grace_time']
                         if grace_time is None or grace_time==-1:
-                            grace_times.append(float('inf'))
+                            grace_times.add(float('inf'))
                         else:
-                            grace_times.append(kv['grace_time'])
+                            grace_times.add(kv['grace_time'])
         if grace_times:
             return grace_times
         if self.grace_time:
