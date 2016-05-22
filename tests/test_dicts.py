@@ -115,16 +115,16 @@ class TestDicts(unittest.TestCase):
         caduc.dicts.SyncDict.instanciate.assert_not_called()
         caduc.dicts.SyncDict.inspect.assert_called_once_with('my.name')
 
-    def test_pop_raises_KeyError_when_unknown_key(self):
+    def test_pop_returns_default_when_unknown_key(self):
         dct = self.create_with_items()
         caduc.dicts.SyncDict.instanciate.reset_mock()
         caduc.dicts.SyncDict.inspect.reset_mock()
-        dct.pop.when.called_with('missing.id').should.throw(KeyError)
+        dct.pop.when.called_with('missing.id').should.return_value(None)
         caduc.dicts.SyncDict.instanciate.assert_not_called()
         caduc.dicts.SyncDict.inspect.assert_called_once_with('missing.id')
 
         caduc.dicts.SyncDict.inspect = mock.Mock(return_value=dict(Id='missing.id'))
-        dct.pop.when.called_with('missing.id').should.throw(KeyError)
+        dct.pop.when.called_with('missing.id').should.return_value(None)
 
     def test_setitem(self):
         dct = self.create_with_items()
