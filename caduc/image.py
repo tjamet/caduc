@@ -1,9 +1,9 @@
 import docker
 import fnmatch
 import logging
+import pytimeparse.timeparse
 import threading
 
-from pytimeparse.timeparse import timeparse
 from .timer import Timer
 
 DEFAULT_DELETE_TIMEOUT = "1d"
@@ -21,6 +21,9 @@ class Image(set):
     DefaultTimeout = DEFAULT_DELETE_TIMEOUT
     # allow max 5 concurrent deletes, preventing from requests.packages.urllib3.connectionpool:Connection pool is full, discarding connection errors
     RmSemaphore = ClientSemaphore(5)
+
+    def timeparse(self, *args, **kwds):
+        return pytimeparse.timeparse.timeparse(*args, **kwds)
 
     def __init__(self, config, images, client, Id, default_timeout=None):
         self.config = config
@@ -66,7 +69,7 @@ class Image(set):
 
     def parse_grace_time(self, timeout):
         if isinstance(timeout, (str, unicode)):
-            seconds = timeparse(timeout)
+            seconds = self.timeparse(timeout)
             if seconds is None:
                 seconds = int(timeout)
         else:
