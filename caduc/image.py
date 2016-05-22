@@ -21,6 +21,7 @@ class Image(set):
     DefaultTimeout = DEFAULT_DELETE_TIMEOUT
     # allow max 5 concurrent deletes, preventing from requests.packages.urllib3.connectionpool:Connection pool is full, discarding connection errors
     RmSemaphore = ClientSemaphore(5)
+    Timer = Timer
 
     def timeparse(self, *args, **kwds):
         return pytimeparse.timeparse.timeparse(*args, **kwds)
@@ -116,7 +117,7 @@ class Image(set):
             return
         if not self.event:
             self.logger.info("scheduling %s removal in %s (%r s)", self, grace_text, seconds)
-            self.event = Timer(seconds, self.rm)
+            self.event = self.Timer(seconds, self.rm)
             self.event.start()
 
     def cancel_rm(self):
