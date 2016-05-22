@@ -143,26 +143,30 @@ class Image(set):
 
     def rm(self):
         with self.RmSemaphore:
-            # we are about to request an image deletion
-            # cancel the original timer and schedule another one in case the deletion fails
+            ## we are about to request an image deletion
+            ## cancel the original timer and schedule another one in case the deletion fails
             self.cancel_rm()
             self.logger.info("deleting image %s", self)
-            for name in self.details.get('RepoTags', []) + [self.id]:
+            try:
+                # ensure we have the latest tags in memory
+                self.details = self.client.inspect_image(self.id)
+            except docker.errors.NotFound:
+                self.images.pop(self.id)
+                return
+                # TODO: refresh images list, it seems that we are out of sync
+            for name in self.details.get('RepoTags', []):
                 try:
                     self.client.remove_image(name)
-                except docker.errors.NotFound:  
-                    try:
-                        self.refresh()
-                        if not self.event:
-                            break
-                    except docker.errors.NotFound:
-                        self.images.pop(self.id)
-                        break
-                except Exception as e:
-                    self.logger.error("Failed removing %s exception raised: %s" % (self, e))
-                    break
+                except docker.errors.NotFound:
+                    self.logger.debug('%s: %s removal failed, looks like it has been deleted elsewhere' % (self, name, ))
+                    pass
+            try:
+                self.client.remove_image(self.details['Id'])
+            except docker.errors.NotFound:
+                self.images.pop(self.id)
+                # TODO: refresh images list, it seems that we are out of sync
             else:
-                self.logger.debug("Failed to delete %s, give it another chance", self)
+                self.logger.debug("%s was deleted, plan another deletion in case we don't receive the deletion event", self)
                 self.schedule_rm()
             # while we don't have the acknoledgement through
             # the event callback, keep the image reference in memory
