@@ -4,7 +4,7 @@ import faker
 import sure
 import unittest
 
-from . import mock
+from .. import mock
 
 class TestImages(unittest.TestCase):
 

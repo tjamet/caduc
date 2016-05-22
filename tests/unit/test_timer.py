@@ -4,7 +4,7 @@ import threading
 import time
 import unittest
 
-from . import mock
+from .. import mock
 from caduc.image import ClientSemaphore
 
 class TestTimer(unittest.TestCase):

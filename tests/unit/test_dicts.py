@@ -3,7 +3,7 @@ import docker.errors
 import unittest
 import sure
 
-from . import mock
+from .. import mock
 
 class TestDicts(unittest.TestCase):
 

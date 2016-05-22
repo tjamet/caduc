@@ -1,9 +1,10 @@
 import docker.errors
 import faker
-import mock
 import sure
 import threading
 import unittest
+
+from .. import mock
 
 from caduc.config import Config
 from caduc.image import ClientSemaphore

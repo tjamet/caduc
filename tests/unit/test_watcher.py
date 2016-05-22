@@ -3,7 +3,7 @@ import docker.errors
 import sure
 import unittest
 
-from . import mock
+from .. import mock
 
 class TestWatcher(unittest.TestCase):
     def setUp(self):

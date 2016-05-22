@@ -1,12 +1,12 @@
 import caduc.config
 import faker
-import mock
 import os
 import random
 import sure
 import unittest
 import yaml
 
+from .. import mock
 
 class TestNode(unittest.TestCase):
 

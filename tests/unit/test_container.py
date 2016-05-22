@@ -1,7 +1,8 @@
 import caduc.container
-import mock
 import unittest
 import sure
+
+from .. import mock
 
 def test_container():
     client = mock.Mock()
