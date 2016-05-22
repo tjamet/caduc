@@ -73,6 +73,8 @@ class Image(set):
                 seconds = int(timeout)
         else:
             seconds = timeout
+        if seconds < 0:
+            seconds = float('inf')
         return seconds
 
     def refresh(self):
