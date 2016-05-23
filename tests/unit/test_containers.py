@@ -61,7 +61,14 @@ class TestContainers(unittest.TestCase):
             caduc.dicts.SyncDict.pop = mock.Mock(return_value = None)
             containers.pop.when.called_with('some.key').should.return_value(None)
 
-            container = mock.Mock()
+            client = mock.Mock()
+            client.inspect_container = mock.Mock(return_value=dict(
+                Id = 'image.id',
+                Name = 'Name',
+                Image = 'Image',
+            ))
+
+            container = caduc.container.Container(None, client, 'image.id')
             container.image_id = 'image.id'
             caduc.dicts.SyncDict.pop = mock.Mock(return_value = container)
             containers.pop.when.called_with('some.key').should.return_value(container)
@@ -69,8 +76,14 @@ class TestContainers(unittest.TestCase):
 
             # when containers are running on unknown images
             # we should go-on running
-            container = mock.Mock()
-            container.image_id = 'image.other.id'
+            client = mock.Mock()
+            client.inspect_container = mock.Mock(return_value=dict(
+                Id = 'image.id',
+                Name = 'Name',
+                Image = 'Image',
+            ))
+
+            container = caduc.container.Container(None, client, 'image.id')
             caduc.dicts.SyncDict.pop = mock.Mock(return_value = container)
             containers.pop.when.called_with('some.key').should.return_value(container)
         finally:
