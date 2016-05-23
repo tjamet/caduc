@@ -15,6 +15,19 @@ from caduc.watcher import Watcher
 
 DEFAULT_DELETE_TIMEOUT = "1d"
 
+def create_watcher(options, args):
+    if options.debug:
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.INFO)
+
+    client = docker.Client(**docker.utils.kwargs_from_env(assert_hostname=False))
+    config = Config(options.config, options.config_path)
+    images = Images(config, client, default_timeout=options.image_gracetime)
+    containers = Containers(config, client, images)
+    images.update_timers()
+    return Watcher(client, images, containers)
+
 def main(argv=sys.argv[1:]):
 
     from optparse import OptionParser
@@ -28,18 +41,7 @@ def main(argv=sys.argv[1:]):
     parser.add_option("-C", '--config-file', dest="config_path",
                       help="Sets the location of caduc configuration FILE", metavar="FILE")
     (options, args) = parser.parse_args(argv)
-
-    if options.debug:
-        logging.basicConfig(level=logging.DEBUG)
-    else:
-        logging.basicConfig(level=logging.INFO)
-
-    client = docker.Client(**docker.utils.kwargs_from_env(assert_hostname=False))
-    config = Config(options.config, options.config_path)
-    images = Images(config, client, default_timeout=options.image_gracetime)
-    containers = Containers(config, client, images)
-    images.update_timers()
-    Watcher(client, images, containers).watch()
+    create_watcher(options, args).watch()
 
 if __name__=='__main__':
     main()
