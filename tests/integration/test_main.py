@@ -9,6 +9,13 @@ import unittest
 from caduc.cmd import create_watcher
 from .. import mock
 
+e = None
+no_docker = False
+try:
+    docker.Client(**docker.utils.kwargs_from_env(assert_hostname=False)).version()
+except Exception as e:
+    no_docker = True
+
 
 class WatchThread(threading.Thread):
 
@@ -19,6 +26,8 @@ class WatchThread(threading.Thread):
     def run(self):
         self.watcher.watch()
 
+
+@unittest.skipIf(no_docker, "Failed to connect to docker host, error: %s" % e)
 class IntegrationTest(unittest.TestCase):
     def setUp(self):
         self.client = docker.Client(**docker.utils.kwargs_from_env(assert_hostname=False))
