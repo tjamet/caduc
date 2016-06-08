@@ -1,7 +1,9 @@
+import decimal
 import docker
 import fnmatch
 import logging
 import pytimeparse.timeparse
+import six
 import threading
 
 from .timer import Timer
@@ -55,7 +57,7 @@ class Image(set):
         grace_times = set()
         if grace_config:
             for name in names:
-                for pattern, kv in grace_config.iteritems():
+                for pattern, kv in six.iteritems(grace_config):
                     if fnmatch.fnmatch(name, pattern):
                         grace_time = kv['grace_time']
                         if grace_time is None or grace_time==-1:
@@ -67,14 +69,15 @@ class Image(set):
         return set([self.grace_time])
 
     def parse_grace_time(self, timeout):
-        if isinstance(timeout, (str, unicode)):
+        if isinstance(timeout, six.string_types):
             seconds = self.timeparse(timeout)
             if seconds is None:
                 seconds = int(timeout)
         else:
             seconds = timeout
-        if seconds < 0:
-            seconds = float('inf')
+        if isinstance(seconds, six.integer_types) or isinstance(seconds, (float, decimal.Decimal)):
+            if seconds < 0:
+                seconds = float('inf')
         return seconds
 
     def refresh(self):

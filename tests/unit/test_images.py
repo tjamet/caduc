@@ -1,6 +1,7 @@
 import caduc.images
 import caduc.dicts
 import faker
+import six
 import sure
 import unittest
 
@@ -69,5 +70,5 @@ class TestImages(unittest.TestCase):
             img_mocks[key] = img
         images.update(img_mocks)
         images.update_timers()
-        for img in img_mocks.itervalues():
+        for img in six.itervalues(img_mocks):
             img.update_timer.assert_called_once_with()

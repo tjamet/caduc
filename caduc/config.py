@@ -1,4 +1,5 @@
 import os
+import six
 import yaml
 
 class Node(dict):
@@ -8,7 +9,7 @@ class Node(dict):
         self.update(values)
 
     def update(self, other):
-        for k, v in other.iteritems():
+        for k, v in six.iteritems(other):
             try:
                 oldv = self[k]
             except KeyError:

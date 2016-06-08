@@ -61,7 +61,7 @@ class IntegrationTest(unittest.TestCase):
 
     def wait_for(self, f, expectation):
         value = f()
-        for i in xrange(20):
+        for i in range(20):
             if f()==expectation:
                 break
             time.sleep(0.05)
@@ -70,7 +70,7 @@ class IntegrationTest(unittest.TestCase):
 
     def wait_for_not(self, f, expectation):
         value = f()
-        for i in xrange(20):
+        for i in range(20):
             if f()!=expectation:
                 break
             time.sleep(0.05)

@@ -2,6 +2,7 @@ import caduc.config
 import faker
 import os
 import random
+import six
 import sure
 import unittest
 import yaml
@@ -24,7 +25,7 @@ class TestNode(unittest.TestCase):
 
         dic = self.faker.pydict(nb_elements=10, variable_nb_elements=True)
         node = caduc.config.Node(**dic)
-        for key, val in node.iteritems():
+        for key, val in six.iteritems(node):
             val.should.be.eql(dic[key])
         dict(node).should.be.eql(dic)
 
@@ -69,7 +70,7 @@ class TestNode(unittest.TestCase):
             self.faker.pylist(),
             self.faker.pyset(),
             ]:
-                key = random.choice(base.keys())
+                key = random.choice(list(base.keys()))
                 baseNode.update({key: value})
                 baseNode[key].should.eql(value)
 
@@ -101,7 +102,7 @@ class TestConfig(unittest.TestCase):
     def setUp(self):
         self.orig_osp = {}
     def tearDown(self):
-        for key, val in self.orig_osp.iteritems():
+        for key, val in six.iteritems(self.orig_osp):
             setattr(os.path, key, val)
 
     def stub_config(self, homedir='HOME', ospjoin='.', exists=False):

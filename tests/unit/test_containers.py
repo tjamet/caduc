@@ -30,7 +30,7 @@ class TestContainers(unittest.TestCase):
         self.images['image.id'] = image
 
         containers.instanciate('container.id')
-        self.images['image.id'].add.assert_called_once()
+        self.images['image.id'].add.assert_called_once_with(mock.ANY)
 
     def test_list_items(self):
         containers = self.getContainers()

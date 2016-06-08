@@ -30,12 +30,12 @@ class TestWatcher(unittest.TestCase):
     def test_tag(self):
         image = self.mock_image(attribute='refresh')
         self.watcher.tag(self.create_event())
-        image.refresh.assert_called_once()
+        image.refresh.assert_called_once_with()
 
     def test_untag(self):
         image = self.mock_image(attribute='refresh')
         self.watcher.untag(self.create_event())
-        image.refresh.assert_called_once()
+        image.refresh.assert_called_once_with()
         # Check that untag succeeds with unkwnown image
         self.watcher.untag(self.create_event(id='non-existing-event'))
 

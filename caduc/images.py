@@ -1,3 +1,5 @@
+import six
+
 from .image import Image
 from .dicts import SyncDict
 
@@ -26,6 +28,6 @@ class Images(SyncDict):
         return image
 
     def update_timers(self):
-        for image in self.itervalues():
+        for image in six.itervalues(self):
             image.update_timer()
 

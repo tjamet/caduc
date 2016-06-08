@@ -1,5 +1,6 @@
 import docker.errors
 import faker
+import six
 import sure
 import threading
 import unittest
@@ -220,7 +221,7 @@ class TestImage(unittest.TestCase):
         s = str(img)
         s.should.contain('imageId')
         s.should.contain(repr(['repoTags']))
-        s.should.contain(repr(['child image Id']))
+        s.should.contain(repr(set(['child image Id'])))
 
     def test_get_grace_times_accepts_unconfigured_images(self):
         config = {}
@@ -255,7 +256,7 @@ class TestImage(unittest.TestCase):
         ).should.return_value(
             'pytimeparsecalled'
         )
-        img.timeparse.assert_called_once()
+        img.timeparse.assert_called_once_with('a string')
 
     def test_parse_grace_time_returns_pytimeparsed_when_unicode(self):
         img = self.getImage()
@@ -265,7 +266,7 @@ class TestImage(unittest.TestCase):
         ).should.return_value(
             'pytimeparsecalled'
         )
-        img.timeparse.assert_called_once()
+        img.timeparse.assert_called_once_with(u'a unicode')
 
     def test_parse_grace_time_fallsback_to_int_on_string_timeparse_failure(self):
         img = self.getImage()
@@ -275,7 +276,7 @@ class TestImage(unittest.TestCase):
         ).should.return_value(
             199
         )
-        img.timeparse.assert_called_once()
+        img.timeparse.assert_called_once_with('199')
 
     def test_parse_grace_time_fallsback_to_int_on_unicode_timeparse_failure(self):
         img = self.getImage()
@@ -285,7 +286,7 @@ class TestImage(unittest.TestCase):
         ).should.return_value(
             10
         )
-        img.timeparse.assert_called_once()
+        img.timeparse.assert_called_once_with(u'10')
 
     def test_parse_grace_time_passthrough_when_no_string_unicode(self):
         img = self.getImage()
@@ -313,7 +314,7 @@ class TestImage(unittest.TestCase):
         img = self.getImage()
         self.mockTimeParse(img)
         for val in (
-            -self.faker.pyfloat(positive=True),
+            -float(self.faker.pyfloat(positive=True)),
             -self.faker.pydecimal(positive=True),
             -abs(self.faker.pyint()),
             ):
@@ -347,7 +348,7 @@ class TestImage(unittest.TestCase):
         img = self.getImage(images=images, inspect={'Parent': 'parent'})
         img.cancel_rm = mock.Mock()
         img.deleted()
-        parent_mock.delete_child.assert_called_once_with(img.id)
+        parent_mock.delete_child.assert_called_once_with(mock.ANY)
 
     def test_when_child_image_is_added_child_is_tracked_and_timer_is_updated(self):
         img = self.getImage()
@@ -449,7 +450,7 @@ class TestImage(unittest.TestCase):
         img.schedule_rm = mock.Mock()
         img.cancel_rm = mock.Mock()
         img.update_timer()
-        img.cancel_rm.assert_called_once()
+        img.cancel_rm.assert_called_once_with()
         img.schedule_rm.assert_not_called()
         
         img = self.getImage()
@@ -457,7 +458,7 @@ class TestImage(unittest.TestCase):
         img.schedule_rm = mock.Mock()
         img.cancel_rm = mock.Mock()
         img.update_timer()
-        img.cancel_rm.assert_called_once()
+        img.cancel_rm.assert_called_once_with()
         img.schedule_rm.assert_not_called()
         
         img = self.getImage()
@@ -466,7 +467,7 @@ class TestImage(unittest.TestCase):
         img.schedule_rm = mock.Mock()
         img.cancel_rm = mock.Mock()
         img.update_timer()
-        img.cancel_rm.assert_called_once()
+        img.cancel_rm.assert_called_once_with()
         img.schedule_rm.assert_not_called()
 
     def test_update_not_required_plans_image_removal(self):
@@ -475,7 +476,7 @@ class TestImage(unittest.TestCase):
         img.cancel_rm = mock.Mock()
         img.update_timer()
         img.cancel_rm.assert_not_called()
-        img.schedule_rm.assert_called_once()
+        img.schedule_rm.assert_called_once_with()
 
     def test_rm_pops_image_from_list(self):
         img = self.getImage(inspect=dict(Id='image Id'))
@@ -486,7 +487,7 @@ class TestImage(unittest.TestCase):
         self.client.remove_image = mock.Mock()
         img.rm()
         self.client.remove_image.assert_called_once_with('image Id')
-        timer.start.assert_called_once()
+        timer.start.assert_called_once_with()
 
 
     def test_rm_deletes_all_tags(self):
@@ -501,7 +502,7 @@ class TestImage(unittest.TestCase):
         self.client.remove_image.call_args_list.should.contain(mock.call('image Id'))
         self.client.remove_image.call_args_list.should.contain(mock.call('repoTag1'))
         self.client.remove_image.call_args_list.should.contain(mock.call('repoTag2'))
-        timer.start.assert_called_once()
+        timer.start.assert_called_once_with()
 
     def test_rm_updates_details(self):
         img = self.getImage(inspect=dict(Id='image Id'))
@@ -519,7 +520,7 @@ class TestImage(unittest.TestCase):
         self.client.remove_image.call_args_list.should.contain(mock.call('new image Id'))
         self.client.remove_image.call_args_list.should.contain(mock.call('repoTag1'))
         self.client.remove_image.call_args_list.should.contain(mock.call('repoTag2'))
-        timer.start.assert_called_once()
+        timer.start.assert_called_once_with()
 
     def test_rm_removes_unfound_image(self):
         images = mock.Mock()
