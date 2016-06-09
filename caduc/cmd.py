@@ -1,4 +1,4 @@
-#/usr/bin/env python
+#!/usr/bin/env python
 
 import docker
 import logging
@@ -21,7 +21,8 @@ def create_watcher(options, args):
     else:
         logging.basicConfig(level=logging.INFO)
 
-    client = docker.Client(**docker.utils.kwargs_from_env(assert_hostname=False))
+    def client():
+        return docker.Client(**docker.utils.kwargs_from_env(assert_hostname=False))
     config = Config(options.config, options.config_path)
     images = Images(config, client, default_timeout=options.image_gracetime)
     containers = Containers(config, client, images)

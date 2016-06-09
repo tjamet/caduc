@@ -10,6 +10,10 @@ class SyncDict(dict):
     """
     AttributeName = None
 
+    @property
+    def client(self):
+        return self._client()
+
     def instanciate(self, Id):
         """
             implement this method to create the object to be created when a new item is found in the client

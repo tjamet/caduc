@@ -10,7 +10,7 @@ class TestWatcher(unittest.TestCase):
         self.client = mock.Mock()
         self.images = {}
         self.containers = mock.Mock()
-        self.watcher = caduc.watcher.Watcher(self.client, self.images, self.containers)
+        self.watcher = caduc.watcher.Watcher(lambda: self.client, self.images, self.containers)
         self.dockerErrorsNotFound = docker.errors.NotFound
 
     def tearDown(self):

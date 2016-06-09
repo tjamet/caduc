@@ -3,9 +3,13 @@ import logging
 
 class Watcher(object):
 
+    @property
+    def client(self):
+        return self._client()
+
     def __init__(self, client, images, containers):
         self.logger = logging.getLogger(str(self.__class__))
-        self.client = client
+        self._client = client
         self.images = images
         self.containers = containers
 

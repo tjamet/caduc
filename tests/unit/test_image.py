@@ -100,7 +100,7 @@ class TestImage(unittest.TestCase):
         return Image(
             config,
             images,
-            self.client,
+            lambda: self.client,
             self.mockInspect(**inspect)['Id'],
             default_timeout=default_timeout
         )
@@ -120,7 +120,7 @@ class TestImage(unittest.TestCase):
     def test_init_without_parent(self):
         inspect = self.mockInspect()
         img_id = self.faker.text()
-        img = Image(self.Config, self.images, self.client, img_id)
+        img = Image(self.Config, self.images, lambda: self.client, img_id)
         self.client.inspect_image.assert_called_once_with(img_id)
         img.children.should.be.empty
         img.parentId.should.be(None)
@@ -135,7 +135,7 @@ class TestImage(unittest.TestCase):
         images = {
             inspect['Parent']: parent_mock,
         }
-        img = Image(self.Config, images, self.client, self.faker.text())
+        img = Image(self.Config, images, lambda: self.client, self.faker.text())
         parent_mock.add_child.assert_called_once_with(inspect['Id'])
 
     def test_get_grace_times_gives_priority_to_image_labels(self):

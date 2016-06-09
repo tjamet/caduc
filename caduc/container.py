@@ -1,10 +1,13 @@
 import logging
 
 class Container(set):
+    @property
+    def client(self):
+        return self._client()
     def __init__(self, config, client, id):
         self.config = config
         self.logger = logging.getLogger(str(self.__class__))
-        self.client = client
+        self._client = client
         inspect = self.client.inspect_container(id)
         self.name = inspect.get('Name', None)
         self.id = inspect['Id']

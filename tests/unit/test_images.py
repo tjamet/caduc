@@ -12,19 +12,22 @@ class TestImages(unittest.TestCase):
     def setUp(self):
         self.faker = faker.Faker()
 
+    def getClient(self):
+        return self.client
+
     def getImages(self):
         self.client = mock.Mock()
         self.config = mock.Mock()
         self.client.images = mock.Mock(return_value = [])
         self.timeout = 20
-        return caduc.images.Images(self.config, self.client, self.timeout)
+        return caduc.images.Images(self.config, self.getClient, self.timeout)
 
     def test_instanciate(self):
         images = self.getImages()
         image = mock.Mock()
         caduc.images.Image = mock.Mock(return_value=image)
         images.instanciate('some.item')
-        caduc.images.Image.assert_called_once_with(self.config, images, self.client, 'some.item', self.timeout)
+        caduc.images.Image.assert_called_once_with(self.config, images, self.getClient, 'some.item', self.timeout)
 
     def test_list_items(self):
         images = self.getImages()

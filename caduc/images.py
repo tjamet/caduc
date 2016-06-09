@@ -5,14 +5,15 @@ from .dicts import SyncDict
 
 class Images(SyncDict):
     AttributeName = 'image'
+
     def __init__(self, config, client, default_timeout=None):
-        self.client = client
+        self._client = client
         self.config = config
         self.default_timeout = default_timeout
         super(Images, self).__init__()
 
     def instanciate(self, item):
-        return Image(self.config, self, self.client, item, self.default_timeout)
+        return Image(self.config, self, self._client, item, self.default_timeout)
 
     def inspect(self, *args, **kwds):
         return self.client.inspect_image(*args, **kwds)

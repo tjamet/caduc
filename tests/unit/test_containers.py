@@ -11,12 +11,15 @@ class TestContainers(unittest.TestCase):
     def setUp(self):
         self.faker = faker.Faker()
 
+    def getClient(self):
+        return self.client
+
     def getContainers(self):
         self.client = mock.Mock()
         self.config = mock.Mock()
         self.client.containers = mock.Mock(return_value = [])
         self.images = {}
-        return caduc.containers.Containers(self.config, self.client, self.images)
+        return caduc.containers.Containers(self.config, self.getClient, self.images)
 
     def test_instanciate(self):
         containers = self.getContainers()
@@ -68,7 +71,7 @@ class TestContainers(unittest.TestCase):
                 Image = 'Image',
             ))
 
-            container = caduc.container.Container(None, client, 'image.id')
+            container = caduc.container.Container(None, lambda: client, 'image.id')
             container.image_id = 'image.id'
             caduc.dicts.SyncDict.pop = mock.Mock(return_value = container)
             containers.pop.when.called_with('some.key').should.return_value(container)
@@ -83,7 +86,7 @@ class TestContainers(unittest.TestCase):
                 Image = 'Image',
             ))
 
-            container = caduc.container.Container(None, client, 'image.id')
+            container = caduc.container.Container(None, lambda: client, 'image.id')
             caduc.dicts.SyncDict.pop = mock.Mock(return_value = container)
             containers.pop.when.called_with('some.key').should.return_value(container)
         finally:

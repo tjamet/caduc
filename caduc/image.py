@@ -28,11 +28,15 @@ class Image(set):
     def timeparse(self, *args, **kwds):
         return pytimeparse.timeparse.timeparse(*args, **kwds)
 
+    @property
+    def client(self):
+        return self._client()
+
     def __init__(self, config, images, client, Id, default_timeout=None):
         self.config = config
         self.logger = logging.getLogger(str(self.__class__))
         self.event = None
-        self.client = client
+        self._client = client
         self.images = images
         self.grace_time = self.DefaultTimeout if default_timeout is None else default_timeout
         self.details = self.client.inspect_image(Id)
