@@ -49,11 +49,16 @@ class Watcher(object):
 
     def __noop(self, event):
         self.logger.debug("no op %r", event)
+ 
+    def handle(self, event):
+        self.logger.debug("received docker event %r", event)
+        try:
+            getattr(self, event['Action'], self.__noop)(event)
+        except Exception as e:
+            self.logger.error("Failed to handle event %r, error: %r" % (event, e))
 
     def watch(self):
+        self.logger.debug("start watching docker events")
         for event in self.client.events(decode=True):
-            try:
-                getattr(self, event['Action'], self.__noop)(event)
-            except Exception as e:
-                self.logger.error("Failed to handle event %r, error: %r" % (event, e))
+            self.handle(event)
 

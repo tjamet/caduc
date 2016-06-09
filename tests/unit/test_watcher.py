@@ -81,3 +81,18 @@ class TestWatcher(unittest.TestCase):
         self.watcher.create.assert_called_once_with(dict(id='id4', Action='create'))
         self.watcher.untag.assert_called_once_with(dict(id='id5', Action='untag'))
         self.watcher.delete.assert_called_once_with(dict(id='id6', Action='delete'))
+
+    def test_watch_calls_handle(self):
+        self.watcher.handle = mock.Mock()
+        self.client.events = mock.Mock(return_value = [
+            self.create_event(id='id1', Action='commit'),
+            self.create_event(id='id2', Action='unknown'),
+        ])
+        self.watcher.watch()
+        self.assertEquals(
+            self.watcher.handle.mock_calls,
+            [
+                mock.call({'id': 'id1', 'Action': 'commit'}),
+                mock.call({'id': 'id2', 'Action': 'unknown'}),
+            ]
+        )
