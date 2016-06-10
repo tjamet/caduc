@@ -1,6 +1,8 @@
-Continuous Delayed Docker Cleanup
+CaDuC
 =================================
-CDDC watched changes on the docker engine to schedule unused image removal.
+.. image:: https://travis-ci.org/tjamet/caduc.svg?branch=master
+    :target: https://travis-ci.org/tjamet/caduc
+Caduc watch changes on the docker engine to schedule unused image removal.
 A gracetime is observed between the removal of a container and removal of the image
 
 How To
@@ -13,7 +15,7 @@ As simple as running:
 ``docker run --rm -ti -v /var/run/docker.sock:/var/run/docker.sock tjamet/caduc``
 
 Optionnally, you can provide a configuration file:
-``docker run --rm -ti -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/.cddc:/var/run/caduc:ro tjamet/caduc --config-file /var/run/caduc/config.yml``
+``docker run --rm -ti -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/.caduc:/var/run/caduc:ro tjamet/caduc --config-file /var/run/caduc/config.yml``
 
 Install
 -------
