@@ -13,11 +13,12 @@ import unittest
 from caduc.cmd import create_watcher
 from .. import mock
 
-e = None
+docker_error = None
 no_docker = False
 try:
     docker.Client(**docker.utils.kwargs_from_env(assert_hostname=False)).version()
 except Exception as e:
+    docker_error = e
     no_docker = True
 
 
@@ -41,7 +42,7 @@ class ControlledTimer(object):
     def __str__(self):
         return "<Timer: delay: %s started: %s>" % (self.delay, self.started)
 
-@unittest.skipIf(no_docker, "Failed to connect to docker host, error: %s" % e)
+@unittest.skipIf(no_docker, "Failed to connect to docker host, error: %s" % docker_error)
 class IntegrationTest(unittest.TestCase):
     def setUp(self):
         self.logger = logging.getLogger(type(self).__name__)
