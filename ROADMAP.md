@@ -11,3 +11,7 @@ Clean up volumes docker created automatically that remains after container remov
 ## Automatic image pull
 
 When an image is pulled, add a feature to update it to its latest version on a regular delay
+
+
+
+bla bla bla
