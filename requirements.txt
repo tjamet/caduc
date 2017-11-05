@@ -1,4 +1,4 @@
-docker-py
+docker
 pyyaml
 pytimeparse
 six
