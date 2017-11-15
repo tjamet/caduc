@@ -1,4 +1,4 @@
-docker==2.5.1
+docker==2.6.1
 pyyaml==3.12
 pytimeparse==1.1.7
 six==1.11.0
