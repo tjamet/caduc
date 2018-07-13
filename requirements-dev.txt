@@ -3,5 +3,5 @@ pytest==2.9.2
 pytest-cov==2.5.1
 pytest-timeout==1.2.1
 mock==2.0.0
-faker==0.8.7
+faker==0.8.17
 sure==1.4.7
